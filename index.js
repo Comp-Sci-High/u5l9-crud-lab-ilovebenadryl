@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 
 const app = express();
 
+app.use(express.static(__dirname + "/public"))
+
 app.use((req, res, next) => {
   console.log(req.method, req.url);
   next();
@@ -28,16 +30,22 @@ const Country = mongoose.model("Country", countrySchema, "Countries");
 // Use postman to add at least THREE different countries
 
 app.post('/add/country', async (req, res)=> {
-  const me = await new country ({
-  country: "Honduras",
-  flagURL: 10954442,
-  rich: false,
+  const me = await new Country ({
+  country: req.body.country,
+  flagURL: req.body.flagURL,
+  population: req.body.population,
+  officialLanguage: req.body.officialLanguage,
+  hasNuclearWeapons: req.body.hasNuclearWeapons,
 }).save()
 res.json(me)
 })
 
 // Create a GET route for "/" that renders countries.ejs with every country from the Countries collection (1 point)
 
+app.get("/", async (req, res)=> {
+  const country = await Country.find({})
+res.render("countries.ejs", {country})
+})
 
 // Go to countries.ejs and follow the tasks there (2 points)
 
@@ -51,10 +59,29 @@ res.json(me)
 // Test this route on post man
 
 
+app.delete("/planet/:name", async (req, res)=> {
+  const response = await Planet.findOneAndDelete ({
+    name: req.params.name
+  }
+)
+  res.json(response)
+})
+
+
+app.patch("/planet/:name", async (req, res)=> {
+  const response = await Planet.findOneAndUpdate ({
+    name: req.params.name
+  }, {
+    n
+  }
+)
+  res.json(response)
+})
+
 async function startServer() {
   
     // add your SRV string with a database called countries
-  await mongoose.connect("...");
+  await mongoose.connect("mongodb+srv://SE12:CSH2025@cluster0.kzjul.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
 
   app.listen(3000, () => {
     console.log("Server is running");
